@@ -72,3 +72,10 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
+.vscode/
+build/
+dist/
+
+.idea/
+.qtcreator/
+*.icc
