@@ -13,6 +13,7 @@ def main():
     app.setApplicationName("Color Recognition App")
 
     window = AppWindow()
+    window.showMaximized()
     window.show()
 
     sys.exit(app.exec())
