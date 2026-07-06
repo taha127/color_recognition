@@ -9,8 +9,8 @@ from PySide6.QtWidgets import (QWidget,
                                QHBoxLayout,
                                QCheckBox,
                                QHeaderView,)
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QColor, QFontMetrics
 from services.camera_manager import CameraWidget
 from widgets.roi_graphics_view import ROIGraphicsView
 
@@ -19,15 +19,14 @@ from widgets.roi_graphics_view import ROIGraphicsView
 #     pyside6-uic form.ui -o ui_form.py, or
 #     pyside2-uic form.ui -o ui_form.py
 from ui.main_window_ui import Ui_Widget
+from widgets.profile_dialog import ProfileDialog
 from services.color_processor import ColorProcessor
-from services.recognation_model import load_profile_model
-from colormath.color_conversions import convert_color
-from colormath.color_objects import sRGBColor
+from services.profile_manager import ProfileManager
 from services.color_history_srv import ColorHistoryService
+from services.color_engine import ColorEngine
 
 
 class MainWindow(QWidget):
-    go_calibration = Signal()
 
     def __init__(self, camera_widget: CameraWidget):
         super().__init__()
@@ -36,6 +35,8 @@ class MainWindow(QWidget):
         self.setWindowTitle("Color Recognition")
         self.processor = ColorProcessor(median_kernel=41)
         self.color_history_service = ColorHistoryService()
+        self.pm = ProfileManager()
+        self.engine = ColorEngine()
 
         self.setup_saved_colors_table()
         self.load_saved_colors()
@@ -50,8 +51,7 @@ class MainWindow(QWidget):
         self.roi_view = ROIGraphicsView()
         self.roi_view.setScene(self.camera_widget.scene)
         self.ui.CameraScan.layout().addWidget(self.roi_view)
-        self.ui.CalibrateBtn_2.clicked.connect(self.go_calibration.emit)
-
+        self.ui.ProfileSelectorBtn.clicked.connect(self.open_profile_dialog)
         self.ui.TakePhotoBtn.clicked.connect(self.take_photo)
         self.ui.ScanBtn.clicked.connect(self.scan)
         self.ui.CancelBtn.clicked.connect(self.handle_cancel)
@@ -62,11 +62,14 @@ class MainWindow(QWidget):
             self.apply_table_saved_colors_changes)
         self.ui.RstBtn.clicked.connect(self.reset_table_changes)
 
+        # Load Saved Profile
+        self.update_profile_name_and_load_profile()
+
     def take_photo(self):
         pix = self.camera_widget.take_photo()
-        if self.model is None:
+        if self.pm.current_profile() is None:
             QMessageBox.warning(
-                self, "Error", "No calibration profile selected.")
+                self, "Error", "No ICC profile selected.")
             return
         if pix is None:
             QMessageBox.warning(self, "Error", "Failed to capture photo")
@@ -97,42 +100,28 @@ class MainWindow(QWidget):
         # -------- Process ROI --------
         result = self.processor.process_roi(roi_img)
 
-        xyz = result["xyz"]
-
-        xyz_list = [xyz.xyz_x, xyz.xyz_y, xyz.xyz_z]
-
-        # -------- Predict Lab --------
-        lab_pred = self.model.predict([xyz_list])[0]
-
-        # -------- Convert Lab → sRGB --------
-        from colormath.color_objects import LabColor
-        lab_color = LabColor(*lab_pred)
-
-        rgb_color = convert_color(lab_color, sRGBColor)
-
-        r = max(0, min(255, int(rgb_color.clamped_rgb_r * 255)))
-        g = max(0, min(255, int(rgb_color.clamped_rgb_g * 255)))
-        b = max(0, min(255, int(rgb_color.clamped_rgb_b * 255)))
-
-        hex_color = "#{:02X}{:02X}{:02X}".format(r, g, b)
-
+        mean_rgb = result["mean_rgb"]
+        color = self.engine.process(mean_rgb)
+        #########################################################
+        # print("mean_rgb:", self.engine.rgb_to_hex(mean_rgb))
+        # print("printer_rgb:", color["printer_rgb"])
+        # print("printer_lab:", color["printer_lab"])
+        # print("camera_rgb:", color["camera_rgb"])
+        # print("camera_hex:", color["camera_hex"])
+        # print("camera_lab:", color["camera_lab"])
+        ############################################################
+        printer_hex = color["printer_hex"]
+        r, g, b = color["printer_rgb"]
         txt_color = "#000000" if (
-            r*0.299 + g*0.587 + b*0.114) > 186 else "#FFFFFF"
+            r*0.299 + g*0.587 + b*0.114) > 140 else "#FFFFFF"
 
         # -------- Show in UI --------
-        self.ui.ColorRecognationLabel.setText(hex_color)
+        self.ui.ColorRecognationLabel.setText(printer_hex)
         self.ui.ColorRecognationLabel.setStyleSheet(
-            f"background-color: {hex_color}; color: {txt_color};"
+            f"background-color: {printer_hex}; color: {txt_color};"
         )
 
         self.camera_widget.resume_live()
-
-    def set_profile(self, profile):
-
-        self.model = load_profile_model(profile)
-
-        QMessageBox.information(self, "Profile Loaded",
-                                f"Profile '{profile['name']}' loaded successfully.")
 
     # ------------------ Cancel captured photo and return to live mode ---------------- #
     def handle_cancel(self):
@@ -250,7 +239,7 @@ class MainWindow(QWidget):
 
     def save_detected_color(self):
 
-        color_code = self.ui.ColorRecognationLabel.text().strip()
+        color_code = self.ui.ColorRecognationLabel.text().strip('-')
         color_name = self.ui.NameColorIn.text().strip()
 
         if not color_code:
@@ -267,6 +256,7 @@ class MainWindow(QWidget):
         self.add_color_to_table(0, new_entry)
 
         self.ui.NameColorIn.clear()
+        self.ui.ColorRecognationLabel.clear()
 
     def apply_table_saved_colors_changes(self):
 
@@ -332,3 +322,51 @@ class MainWindow(QWidget):
     def on_checkbox_changed(self):
 
         self.enable_action_buttons()
+
+    def open_profile_dialog(self):
+
+        dialog = ProfileDialog(self)
+
+        dialog.deleteRequested.connect(self.handle_delete_profile)
+
+        if dialog.exec():
+            try:
+                self.ui.NameOfProfile.setText(dialog.profile_name)
+
+                if dialog.save_profile:
+                    self.pm.add_profile(dialog.profile_path, dialog.profile_name)
+
+                self.engine.load_printer_profile(dialog.profile_path)
+
+            except Exception as e:
+                QMessageBox.critical(
+                    self, "Error", f"Failed to load ICC profile: {e}")
+                self.ui.NameOfProfile.clear()
+                self.engine.unload_printer_profile()
+
+    def update_profile_name_and_load_profile(self):
+
+        saved = self.pm.current_profile()
+
+        if saved is None:
+            return
+
+        metrics = QFontMetrics(self.ui.NameOfProfile.font())
+        text = metrics.elidedText(
+            saved["name"],
+            Qt.TextElideMode.ElideRight,
+            self.ui.NameOfProfile.contentsRect().width()
+        )
+        self.ui.NameOfProfile.setText(text)
+        self.engine.load_printer_profile(saved["path"])
+
+    def handle_delete_profile(self, name):
+
+        current = self.pm.current_profile()
+
+        if current and current["name"] == name:
+
+            self.engine.unload_printer_profile()
+            self.ui.NameOfProfile.clear()
+
+        self.pm.remove_profile(name)
