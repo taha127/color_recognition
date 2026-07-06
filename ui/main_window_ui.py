@@ -17,26 +17,34 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QFormLayout, QFrame,
     QGraphicsView, QGridLayout, QGroupBox, QHBoxLayout,
-    QHeaderView, QLabel, QLineEdit, QPushButton,
-    QSizePolicy, QSpacerItem, QTabWidget, QTableWidget,
-    QTableWidgetItem, QVBoxLayout, QWidget)
+    QHeaderView, QLabel, QLayout, QLineEdit,
+    QPushButton, QSizePolicy, QSpacerItem, QTabWidget,
+    QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget)
 
 class Ui_Widget(object):
     def setupUi(self, Widget):
         if not Widget.objectName():
             Widget.setObjectName(u"Widget")
         Widget.setEnabled(True)
-        Widget.resize(996, 660)
+        Widget.resize(1091, 748)
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(Widget.sizePolicy().hasHeightForWidth())
+        Widget.setSizePolicy(sizePolicy)
         Widget.setStyleSheet(u"")
         self.gridLayout = QGridLayout(Widget)
         self.gridLayout.setObjectName(u"gridLayout")
+        self.gridLayout.setSizeConstraint(QLayout.SizeConstraint.SetDefaultConstraint)
+        self.gridLayout.setHorizontalSpacing(2)
+        self.gridLayout.setVerticalSpacing(6)
         self.verticalGroupBox_3 = QGroupBox(Widget)
         self.verticalGroupBox_3.setObjectName(u"verticalGroupBox_3")
-        sizePolicy = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy.setHorizontalStretch(1)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.verticalGroupBox_3.sizePolicy().hasHeightForWidth())
-        self.verticalGroupBox_3.setSizePolicy(sizePolicy)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(1)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.verticalGroupBox_3.sizePolicy().hasHeightForWidth())
+        self.verticalGroupBox_3.setSizePolicy(sizePolicy1)
         font = QFont()
         font.setBold(True)
         self.verticalGroupBox_3.setFont(font)
@@ -57,11 +65,11 @@ class Ui_Widget(object):
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.formsavecolor = QGroupBox(self.tab)
         self.formsavecolor.setObjectName(u"formsavecolor")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.formsavecolor.sizePolicy().hasHeightForWidth())
-        self.formsavecolor.setSizePolicy(sizePolicy1)
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Maximum)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.formsavecolor.sizePolicy().hasHeightForWidth())
+        self.formsavecolor.setSizePolicy(sizePolicy2)
         self.formsavecolor.setMouseTracking(False)
         self.formsavecolor.setTabletTracking(False)
         self.formsavecolor.setAcceptDrops(False)
@@ -78,6 +86,13 @@ class Ui_Widget(object):
 
         self.ColorRecognationLabel = QLabel(self.formsavecolor)
         self.ColorRecognationLabel.setObjectName(u"ColorRecognationLabel")
+        self.ColorRecognationLabel.setCursor(QCursor(Qt.CursorShape.IBeamCursor))
+        self.ColorRecognationLabel.setMouseTracking(False)
+        self.ColorRecognationLabel.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.ColorRecognationLabel.setAcceptDrops(False)
+        self.ColorRecognationLabel.setTextFormat(Qt.TextFormat.AutoText)
+        self.ColorRecognationLabel.setScaledContents(True)
+        self.ColorRecognationLabel.setTextInteractionFlags(Qt.TextInteractionFlag.LinksAccessibleByMouse|Qt.TextInteractionFlag.TextSelectableByKeyboard|Qt.TextInteractionFlag.TextSelectableByMouse)
 
         self.formLayout.setWidget(0, QFormLayout.ItemRole.FieldRole, self.ColorRecognationLabel)
 
@@ -201,11 +216,11 @@ class Ui_Widget(object):
 
         self.verticalGroupBox_2 = QGroupBox(Widget)
         self.verticalGroupBox_2.setObjectName(u"verticalGroupBox_2")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy2.setHorizontalStretch(2)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.verticalGroupBox_2.sizePolicy().hasHeightForWidth())
-        self.verticalGroupBox_2.setSizePolicy(sizePolicy2)
+        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy3.setHorizontalStretch(2)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.verticalGroupBox_2.sizePolicy().hasHeightForWidth())
+        self.verticalGroupBox_2.setSizePolicy(sizePolicy3)
         self.verticalGroupBox_2.setFont(font)
         self.verticalLayout_4 = QVBoxLayout(self.verticalGroupBox_2)
         self.verticalLayout_4.setSpacing(7)
@@ -220,7 +235,7 @@ class Ui_Widget(object):
         self.CameraScan.setFrameShape(QFrame.Shape.Panel)
         self.CameraScan.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.CameraScan.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.CameraScan.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContents)
+        self.CameraScan.setSizeAdjustPolicy(QAbstractScrollArea.SizeAdjustPolicy.AdjustToContentsOnFirstShow)
         self.CameraScan.setResizeAnchor(QGraphicsView.ViewportAnchor.NoAnchor)
 
         self.verticalLayout_4.addWidget(self.CameraScan)
@@ -288,11 +303,11 @@ class Ui_Widget(object):
 
         self.verticalGroupBox = QGroupBox(Widget)
         self.verticalGroupBox.setObjectName(u"verticalGroupBox")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.verticalGroupBox.sizePolicy().hasHeightForWidth())
-        self.verticalGroupBox.setSizePolicy(sizePolicy3)
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(self.verticalGroupBox.sizePolicy().hasHeightForWidth())
+        self.verticalGroupBox.setSizePolicy(sizePolicy4)
         self.verticalGroupBox.setFont(font)
         self.verticalGroupBox.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         self.verticalGroupBox.setToolTipDuration(-15)
@@ -303,11 +318,11 @@ class Ui_Widget(object):
         self.SettingsBtn = QPushButton(self.verticalGroupBox)
         self.SettingsBtn.setObjectName(u"SettingsBtn")
         self.SettingsBtn.setEnabled(True)
-        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(self.SettingsBtn.sizePolicy().hasHeightForWidth())
-        self.SettingsBtn.setSizePolicy(sizePolicy4)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.SettingsBtn.sizePolicy().hasHeightForWidth())
+        self.SettingsBtn.setSizePolicy(sizePolicy5)
         self.SettingsBtn.setFont(font1)
         self.SettingsBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.SettingsBtn.setStyleSheet(u"#SettingsBtn{\n"
@@ -323,32 +338,32 @@ class Ui_Widget(object):
 
         self.verticalLayout_3.addWidget(self.SettingsBtn)
 
-        self.CalibrateBtn_2 = QPushButton(self.verticalGroupBox)
-        self.CalibrateBtn_2.setObjectName(u"CalibrateBtn_2")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.CalibrateBtn_2.sizePolicy().hasHeightForWidth())
-        self.CalibrateBtn_2.setSizePolicy(sizePolicy5)
-        self.CalibrateBtn_2.setFont(font1)
-        self.CalibrateBtn_2.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.CalibrateBtn_2.setStyleSheet(u"#CalibrateBtn_2{\n"
+        self.ProfileSelectorBtn = QPushButton(self.verticalGroupBox)
+        self.ProfileSelectorBtn.setObjectName(u"ProfileSelectorBtn")
+        sizePolicy6 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Preferred)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.ProfileSelectorBtn.sizePolicy().hasHeightForWidth())
+        self.ProfileSelectorBtn.setSizePolicy(sizePolicy6)
+        self.ProfileSelectorBtn.setFont(font1)
+        self.ProfileSelectorBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.ProfileSelectorBtn.setStyleSheet(u"#ProfileSelectorBtn{\n"
 "background-color: rgb(135, 135, 135);\n"
 "color: rgb(0, 0, 0);\n"
 "border-radius: 10px;\n"
 "padding: 10px 10px;\n"
 "}\n"
 "\n"
-"#CalibrateBtn_2:hover {\n"
+"#ProfileSelectorBtn:hover {\n"
 "background-color: rgb(115, 115, 115);\n"
 "}")
 
-        self.verticalLayout_3.addWidget(self.CalibrateBtn_2)
+        self.verticalLayout_3.addWidget(self.ProfileSelectorBtn)
 
         self.SendFeedBackBtn = QPushButton(self.verticalGroupBox)
         self.SendFeedBackBtn.setObjectName(u"SendFeedBackBtn")
-        sizePolicy5.setHeightForWidth(self.SendFeedBackBtn.sizePolicy().hasHeightForWidth())
-        self.SendFeedBackBtn.setSizePolicy(sizePolicy5)
+        sizePolicy6.setHeightForWidth(self.SendFeedBackBtn.sizePolicy().hasHeightForWidth())
+        self.SendFeedBackBtn.setSizePolicy(sizePolicy6)
         self.SendFeedBackBtn.setFont(font1)
         self.SendFeedBackBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.SendFeedBackBtn.setStyleSheet(u"#SendFeedBackBtn{\n"
@@ -366,8 +381,8 @@ class Ui_Widget(object):
 
         self.HelpBtn = QPushButton(self.verticalGroupBox)
         self.HelpBtn.setObjectName(u"HelpBtn")
-        sizePolicy5.setHeightForWidth(self.HelpBtn.sizePolicy().hasHeightForWidth())
-        self.HelpBtn.setSizePolicy(sizePolicy5)
+        sizePolicy6.setHeightForWidth(self.HelpBtn.sizePolicy().hasHeightForWidth())
+        self.HelpBtn.setSizePolicy(sizePolicy6)
         self.HelpBtn.setFont(font1)
         self.HelpBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.HelpBtn.setStyleSheet(u"#HelpBtn{\n"
@@ -385,8 +400,8 @@ class Ui_Widget(object):
 
         self.AboutSoftBtn = QPushButton(self.verticalGroupBox)
         self.AboutSoftBtn.setObjectName(u"AboutSoftBtn")
-        sizePolicy5.setHeightForWidth(self.AboutSoftBtn.sizePolicy().hasHeightForWidth())
-        self.AboutSoftBtn.setSizePolicy(sizePolicy5)
+        sizePolicy6.setHeightForWidth(self.AboutSoftBtn.sizePolicy().hasHeightForWidth())
+        self.AboutSoftBtn.setSizePolicy(sizePolicy6)
         self.AboutSoftBtn.setFont(font1)
         self.AboutSoftBtn.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.AboutSoftBtn.setStyleSheet(u"#AboutSoftBtn{\n"
@@ -410,6 +425,11 @@ class Ui_Widget(object):
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.NameOfProfile = QLabel(self.groupBox_2)
         self.NameOfProfile.setObjectName(u"NameOfProfile")
+        sizePolicy7 = QSizePolicy(QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Preferred)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.NameOfProfile.sizePolicy().hasHeightForWidth())
+        self.NameOfProfile.setSizePolicy(sizePolicy7)
 
         self.verticalLayout.addWidget(self.NameOfProfile)
 
@@ -464,11 +484,11 @@ class Ui_Widget(object):
         self.ScanBtn.setText(QCoreApplication.translate("Widget", u"Start Scan", None))
         self.verticalGroupBox.setTitle(QCoreApplication.translate("Widget", u"ToolBar", None))
         self.SettingsBtn.setText(QCoreApplication.translate("Widget", u"Settings", None))
-        self.CalibrateBtn_2.setText(QCoreApplication.translate("Widget", u"Calibrate", None))
+        self.ProfileSelectorBtn.setText(QCoreApplication.translate("Widget", u"Profile", None))
         self.SendFeedBackBtn.setText(QCoreApplication.translate("Widget", u"Send Feedback", None))
         self.HelpBtn.setText(QCoreApplication.translate("Widget", u"Help", None))
         self.AboutSoftBtn.setText(QCoreApplication.translate("Widget", u"About Software", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("Widget", u"Calibrated Profile", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("Widget", u"Selected Profile", None))
         self.NameOfProfile.setText(QCoreApplication.translate("Widget", u"---------", None))
     # retranslateUi
 
