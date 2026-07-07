@@ -14,6 +14,10 @@ class ColorEngine:
         self.transform = None
         self.srgb = ImageCms.createProfile("sRGB")
 
+    @property
+    def has_profile(self):
+        return self.transform is not None
+
     def load_printer_profile(self, profile_path):
 
         if not os.path.exists(profile_path):
