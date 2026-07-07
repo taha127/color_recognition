@@ -65,7 +65,7 @@ class MainWindow(QWidget):
 
     def take_photo(self):
         pix = self.camera_widget.take_photo()
-        if self.pm.current_profile() is None:
+        if not self.engine.has_profile:
             QMessageBox.warning(
                 self, "Error", "No ICC profile selected.")
             return
