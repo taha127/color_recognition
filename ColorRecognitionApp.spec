@@ -7,7 +7,6 @@ a = Analysis(
     binaries=[],
     datas=[],
     hiddenimports=[
-        'sklearn',
         'cv2',
         'colormath',
     ],
