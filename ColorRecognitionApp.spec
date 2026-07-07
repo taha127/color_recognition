@@ -37,7 +37,7 @@ a = Analysis(
         'PySide6.QtMultimediaWidgets',
     ],
     noarchive=False,
-    optimize=0,
+    optimize=1,
 )
 pyz = PYZ(a.pure)
 
