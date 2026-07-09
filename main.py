@@ -14,7 +14,6 @@ def main():
 
     window = AppWindow()
     window.showMaximized()
-    window.show()
 
     sys.exit(app.exec())
 
