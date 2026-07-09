@@ -80,3 +80,6 @@ dist/
 .qtcreator/
 *.icc
 *.user
+
+config/dev_config.py
+generated/generated_license.py
