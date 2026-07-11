@@ -137,25 +137,6 @@ class MainWindow(QWidget):
         if result == QMessageBox.Yes:
             self.camera_widget.resume_live()
 
-    def save_detected_color(self):
-
-        color_code = self.ui.ColorRecognationLabel.text().strip()
-        color_name = self.ui.NameColorIn.text().strip()
-
-        if not color_code:
-            QMessageBox.warning(self, "Error", "No detected color code.")
-            return
-
-        if not color_name:
-            QMessageBox.warning(
-                self, "Error", "Please enter a name for the color.")
-            return
-
-        self.color_history_service.save_color(color_name, color_code)
-        QMessageBox.information(
-            self, "Saved", f"Color '{color_name}' saved successfully.")
-        self.ui.NameColorIn.clear()
-
     def setup_saved_colors_table(self):
 
         table = self.ui.SavedColorTable
@@ -178,7 +159,12 @@ class MainWindow(QWidget):
 
         colors = self.color_history_service.load_saved_colors()
         for index, color in enumerate(colors):
-            self.add_color_to_table(index, color)
+            try:
+                self.add_color_to_table(index, color)
+
+            except Exception as e:
+                print(f"Skip invalid color: {color}")
+                print(e)
 
         table.blockSignals(False)
         self.ui.SaveActBtn.setEnabled(False)
@@ -202,10 +188,13 @@ class MainWindow(QWidget):
         table.setItem(row, 1, name_item)
 
         # Color code
-        color_item = QTableWidgetItem(color["hex"])
+        hex_color = color.get("hex", "").strip()
+        if not QColor(hex_color).isValid():
+            raise ValueError(f"Invalid HEX Color: {hex_color}")
+        color_item = QTableWidgetItem(hex_color)
         color_item.setTextAlignment(Qt.AlignCenter)
-        rgb = self.processor.hex_to_rgb(color["hex"])
-        color_item.setBackground(QColor(color["hex"]))
+        rgb = self.processor.hex_to_rgb(hex_color)
+        color_item.setBackground(QColor(hex_color))
         txt_color = "#000000" if (
             rgb[0]*0.299 + rgb[1]*0.587 + rgb[2]*0.114) > 186 else "#FFFFFF"
         color_item.setForeground(QColor(txt_color))
@@ -237,7 +226,12 @@ class MainWindow(QWidget):
 
     def save_detected_color(self):
 
-        color_code = self.ui.ColorRecognationLabel.text().strip('-')
+        color_code = self.ui.ColorRecognationLabel.text().strip()
+        if not QColor(color_code).isValid():
+
+            QMessageBox.warning(self, "Error", "Detected Color is invalid.")
+            return
+
         color_name = self.ui.NameColorIn.text().strip()
 
         if not color_code:
@@ -252,7 +246,8 @@ class MainWindow(QWidget):
             color_name, color_code)
 
         self.add_color_to_table(0, new_entry)
-
+        QMessageBox.information(
+            self, "Saved", f"Color '{color_name}' saved successfully.")
         self.ui.NameColorIn.clear()
         self.ui.ColorRecognationLabel.clear()
 
@@ -332,7 +327,8 @@ class MainWindow(QWidget):
                 self.ui.NameOfProfile.setText(dialog.profile_name)
 
                 if dialog.save_profile:
-                    self.pm.add_profile(dialog.profile_path, dialog.profile_name)
+                    self.pm.add_profile(dialog.profile_path,
+                                        dialog.profile_name)
 
                 self.engine.load_printer_profile(dialog.profile_path)
 
